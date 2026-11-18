@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.PipiEventos" parent="android:style/Theme.DeviceDefault.DayNight.NoActionBar" />
+</resources>
