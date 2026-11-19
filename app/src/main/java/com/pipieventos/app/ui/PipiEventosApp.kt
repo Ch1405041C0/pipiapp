@@ -32,7 +32,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextButtonDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -240,7 +239,7 @@ private fun WelcomeScreen(
                     }
                     TextButton(
                         onClick = onArtist,
-                        colors = TextButtonDefaults.textButtonColors(contentColor = Color.White),
+                        colors = ButtonDefaults.textButtonColors(contentColor = Color.White),
                     ) {
                         Text(
                             text = "Quiero ofrecer mi show",
