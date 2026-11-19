@@ -16,9 +16,9 @@ La plantilla es un estándar de ingeniería y documentación; la base técnica d
 
 ## Alcance inicial
 
-- Cliente: define tipo de evento, zona, invitados, fecha, horario, presupuesto e intereses.
+- Cliente: responde un recorrido corto, una pregunta por pantalla, para definir tipo de evento, zona, invitados, fecha, horario, presupuesto e intereses.
 - Cliente: recibe propuestas de artistas y lugares; puede abrir WhatsApp con una consulta precargada.
-- Artista: completa su perfil de show, duración, zona, precio y datos de contacto.
+- Artista: presenta su show en tres pasos breves: contacto, características y valor orientativo.
 - Artista: visualiza que su perfil queda en revisión y que la comisión de Pipi Eventos es del 30% del monto acordado.
 
 Los datos del primer corte son demostrativos y viven en memoria. El siguiente hito será conectarlos a la misma base de datos y reglas de acceso que use el panel Admin.

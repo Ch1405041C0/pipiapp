@@ -19,14 +19,14 @@ Permitir que una persona arme un evento y consulte propuestas de artistas o luga
 ## Flujo cliente
 
 1. Elige “Quiero armar un evento”.
-2. Informa tipo de evento, zona, invitados, día, horario, presupuesto y experiencias buscadas.
+2. Responde una pregunta por pantalla: tipo de evento, zona, invitados, día/horario, presupuesto y experiencias buscadas.
 3. Ve tarjetas de artistas y un lugar sugerido.
 4. Toca una tarjeta para abrir WhatsApp con un mensaje de consulta precargado.
 
 ## Flujo artista
 
 1. Elige “Quiero ofrecer mi show”.
-2. Completa nombre, WhatsApp, zona, tipo, duración, precio y descripción.
+2. Completa tres pasos: contacto, características del show y valor/descripción.
 3. Envía la propuesta para revisión.
 4. Ve el estado pendiente y la regla comercial: Pipi Eventos descuenta el 30% del importe acordado con el cliente.
 

@@ -166,14 +166,14 @@ private fun WelcomeScreen(
 
                 Spacer(Modifier.height(46.dp))
                 Text(
-                    text = "Una noche hecha para vos.",
+                    text = "¿Qué querés hacer hoy?",
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
                     color = PipiInk,
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "Organizá un evento o mostrale tu show a quienes están buscando una experiencia distinta.",
+                    text = "Elegí un camino y te guiamos paso a paso. Sin formularios eternos.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = PipiInk.copy(alpha = 0.72f),
                 )
@@ -183,14 +183,14 @@ private fun WelcomeScreen(
                 RoleCard(
                     emoji = "🎉",
                     title = "Quiero armar un evento",
-                    body = "Contanos zona, fecha, invitados y presupuesto. Te proponemos artistas y lugares.",
+                    body = "Respondé unas preguntas cortas y encontrá artistas y lugares para tu plan.",
                     button = "Empezar mi plan",
                     onClick = onCustomer,
                 )
                 RoleCard(
                     emoji = "🎤",
                     title = "Quiero ofrecer mi show",
-                    body = "Creá tu perfil artístico para que el equipo lo revise y lo publique.",
+                    body = "Presentá tu show en tres pasos para que el equipo lo revise y lo publique.",
                     button = "Publicar mi show",
                     onClick = onArtist,
                 )
@@ -245,6 +245,7 @@ private fun EventPlannerScreen(
     onBack: () -> Unit,
     onMatches: (EventDraft) -> Unit,
 ) {
+    var step by rememberSaveable { mutableIntStateOf(0) }
     var eventType by rememberSaveable { mutableStateOf("Cumpleaños") }
     var zone by rememberSaveable { mutableStateOf("CABA · GBA Norte") }
     var guests by rememberSaveable { mutableIntStateOf(20) }
@@ -255,8 +256,15 @@ private fun EventPlannerScreen(
     val eventTypes = listOf("Cumpleaños", "Despedida", "After office", "Otro")
     val services = listOf("Stand up", "Comedia", "Pole dance", "Burlesque", "Música en vivo")
 
+    val totalSteps = 6
+
     Scaffold(
-        topBar = { AppTopBar(title = "Armá tu evento", onBack = onBack) },
+        topBar = {
+            AppTopBar(
+                title = "Armá tu evento",
+                onBack = { if (step == 0) onBack() else step -= 1 },
+            )
+        },
         containerColor = PipiBackground,
     ) { padding ->
         Column(
@@ -266,86 +274,113 @@ private fun EventPlannerScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 18.dp),
         ) {
-            Text(
-                text = "Te mostramos propuestas acordes a tu plan.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = PipiInk.copy(alpha = 0.72f),
-            )
+            JourneyProgress(step = step, totalSteps = totalSteps)
+            Spacer(Modifier.height(30.dp))
 
-            Spacer(Modifier.height(24.dp))
-            FormLabel("¿Qué celebrás?")
-            ChipRow(options = eventTypes, selected = setOf(eventType)) { eventType = it }
+            when (step) {
+                0 -> {
+                    QuestionHeading(
+                        title = "Primero: ¿qué celebrás?",
+                        body = "Así afinamos el tipo de propuesta.",
+                    )
+                    ChipRow(options = eventTypes, selected = setOf(eventType)) { eventType = it }
+                }
 
-            Spacer(Modifier.height(22.dp))
-            FormLabel("¿En qué zona?")
-            OutlinedTextField(
-                value = zone,
-                onValueChange = { zone = it },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                label = { Text("Zona") },
-            )
+                1 -> {
+                    QuestionHeading(
+                        title = "¿En qué zona querés hacerlo?",
+                        body = "Buscamos artistas y lugares que trabajen cerca.",
+                    )
+                    OutlinedTextField(
+                        value = zone,
+                        onValueChange = { zone = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        label = { Text("Por ejemplo: Palermo, Ballester o Tigre") },
+                    )
+                }
 
-            Spacer(Modifier.height(22.dp))
-            FormLabel("¿Cuántas personas son?")
-            Counter(value = guests, onValueChange = { guests = it })
+                2 -> {
+                    QuestionHeading(
+                        title = "¿Cuántas personas van a ser?",
+                        body = "Nos ayuda a filtrar shows y capacidad del lugar.",
+                    )
+                    Counter(value = guests, onValueChange = { guests = it })
+                }
 
-            Spacer(Modifier.height(22.dp))
-            FormLabel("¿Cuándo es?")
-            OutlinedTextField(
-                value = date,
-                onValueChange = { date = it },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                label = { Text("Día") },
-            )
-            Spacer(Modifier.height(10.dp))
-            OutlinedTextField(
-                value = time,
-                onValueChange = { time = it },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                label = { Text("Horario estimado") },
-            )
+                3 -> {
+                    QuestionHeading(
+                        title = "¿Cuándo es el evento?",
+                        body = "Con una fecha estimada ya podemos consultar disponibilidad.",
+                    )
+                    OutlinedTextField(
+                        value = date,
+                        onValueChange = { date = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        label = { Text("Día") },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = time,
+                        onValueChange = { time = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        label = { Text("Horario estimado") },
+                    )
+                }
 
-            Spacer(Modifier.height(22.dp))
-            FormLabel("Presupuesto total estimado")
-            OutlinedTextField(
-                value = budget,
-                onValueChange = { budget = it.filter(Char::isDigit) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                prefix = { Text("$") },
-                label = { Text("Monto en pesos") },
-            )
+                4 -> {
+                    QuestionHeading(
+                        title = "¿Qué presupuesto imaginás?",
+                        body = "Es orientativo; después lo confirmás con cada propuesta.",
+                    )
+                    OutlinedTextField(
+                        value = budget,
+                        onValueChange = { budget = it.filter(Char::isDigit) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        prefix = { Text("$") },
+                        label = { Text("Monto en pesos") },
+                    )
+                }
 
-            Spacer(Modifier.height(22.dp))
-            FormLabel("¿Qué querés sumar?")
-            ChipRow(options = services, selected = selectedServices.toSet()) { item ->
-                if (item in selectedServices) selectedServices.remove(item) else selectedServices.add(item)
+                else -> {
+                    QuestionHeading(
+                        title = "¿Qué te gustaría sumar?",
+                        body = "Podés elegir más de una experiencia.",
+                    )
+                    ChipRow(options = services, selected = selectedServices.toSet()) { item ->
+                        if (item in selectedServices) selectedServices.remove(item) else selectedServices.add(item)
+                    }
+                }
             }
 
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(34.dp))
             Button(
                 onClick = {
-                    onMatches(
-                        EventDraft(
-                            eventType = eventType,
-                            zone = zone.ifBlank { "CABA · GBA Norte" },
-                            guests = guests,
-                            date = date.ifBlank { "A definir" },
-                            time = time.ifBlank { "A definir" },
-                            budget = budget.ifBlank { "0" },
-                            services = selectedServices.toList(),
-                        ),
-                    )
+                    if (step < totalSteps - 1) {
+                        step += 1
+                    } else {
+                        onMatches(
+                            EventDraft(
+                                eventType = eventType,
+                                zone = zone.ifBlank { "CABA · GBA Norte" },
+                                guests = guests,
+                                date = date.ifBlank { "A definir" },
+                                time = time.ifBlank { "A definir" },
+                                budget = budget.ifBlank { "0" },
+                                services = selectedServices.toList(),
+                            ),
+                        )
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = PipiPurple),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
             ) {
-                Text("Ver propuestas")
+                Text(if (step == totalSteps - 1) "Ver propuestas" else "Siguiente")
             }
             Spacer(Modifier.height(12.dp))
         }
@@ -435,6 +470,7 @@ private fun ArtistProfileScreen(
     onBack: () -> Unit,
     onSubmitted: () -> Unit,
 ) {
+    var step by rememberSaveable { mutableIntStateOf(0) }
     var name by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
     var zone by rememberSaveable { mutableStateOf("CABA · GBA Norte") }
@@ -444,8 +480,20 @@ private fun ArtistProfileScreen(
     var description by rememberSaveable { mutableStateOf("") }
     val showTypes = listOf("Stand up", "Comedia", "Pole dance", "Burlesque", "Música en vivo")
 
+    val totalSteps = 3
+    val canContinue = when (step) {
+        0 -> name.isNotBlank() && phone.isNotBlank()
+        1 -> duration.isNotBlank()
+        else -> price.isNotBlank()
+    }
+
     Scaffold(
-        topBar = { AppTopBar(title = "Publicá tu show", onBack = onBack) },
+        topBar = {
+            AppTopBar(
+                title = "Publicá tu show",
+                onBack = { if (step == 0) onBack() else step -= 1 },
+            )
+        },
         containerColor = PipiBackground,
     ) { padding ->
         Column(
@@ -455,62 +503,95 @@ private fun ArtistProfileScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 18.dp),
         ) {
-            Text(
-                text = "El equipo revisa cada perfil antes de mostrarlo a clientes.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = PipiInk.copy(alpha = 0.72f),
-            )
+            JourneyProgress(step = step, totalSteps = totalSteps)
+            Spacer(Modifier.height(30.dp))
 
-            Spacer(Modifier.height(22.dp))
-            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre o nombre artístico") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(value = phone, onValueChange = { phone = it }, label = { Text("WhatsApp") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(value = zone, onValueChange = { zone = it }, label = { Text("Zona donde trabajás") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            when (step) {
+                0 -> {
+                    QuestionHeading(
+                        title = "¿Cómo te presentamos?",
+                        body = "Primero tus datos de contacto. No se publican sin revisión.",
+                    )
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Nombre o nombre artístico") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = phone,
+                        onValueChange = { phone = it },
+                        label = { Text("WhatsApp") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
 
-            Spacer(Modifier.height(22.dp))
-            FormLabel("Tipo de show")
-            ChipRow(options = showTypes, selected = setOf(type)) { type = it }
+                1 -> {
+                    QuestionHeading(
+                        title = "Contanos del show",
+                        body = "Con esto sabemos qué tipo de evento te puede necesitar.",
+                    )
+                    OutlinedTextField(
+                        value = zone,
+                        onValueChange = { zone = it },
+                        label = { Text("Zona donde trabajás") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(Modifier.height(18.dp))
+                    ChipRow(options = showTypes, selected = setOf(type)) { type = it }
+                    Spacer(Modifier.height(14.dp))
+                    OutlinedTextField(
+                        value = duration,
+                        onValueChange = { duration = it.filter(Char::isDigit) },
+                        label = { Text("Duración en minutos") },
+                        suffix = { Text("min") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
 
-            Spacer(Modifier.height(14.dp))
-            OutlinedTextField(
-                value = duration,
-                onValueChange = { duration = it.filter(Char::isDigit) },
-                label = { Text("Duración en minutos") },
-                suffix = { Text("min") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
-                value = price,
-                onValueChange = { price = it.filter(Char::isDigit) },
-                label = { Text("Valor orientativo") },
-                prefix = { Text("$") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Contanos sobre tu show") },
-                minLines = 4,
-                modifier = Modifier.fillMaxWidth(),
-            )
+                else -> {
+                    QuestionHeading(
+                        title = "Último detalle",
+                        body = "El valor es orientativo; el monto final se acuerda con cada cliente.",
+                    )
+                    OutlinedTextField(
+                        value = price,
+                        onValueChange = { price = it.filter(Char::isDigit) },
+                        label = { Text("Valor orientativo") },
+                        prefix = { Text("$") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text("¿Qué tiene de especial tu show?") },
+                        minLines = 4,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(Modifier.height(18.dp))
+                    CommissionNotice()
+                }
+            }
 
-            Spacer(Modifier.height(18.dp))
-            CommissionNotice()
             Spacer(Modifier.height(24.dp))
             Button(
-                onClick = onSubmitted,
-                enabled = name.isNotBlank() && phone.isNotBlank() && price.isNotBlank(),
+                onClick = {
+                    if (step < totalSteps - 1) step += 1 else onSubmitted()
+                },
+                enabled = canContinue,
                 colors = ButtonDefaults.buttonColors(containerColor = PipiPurple),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
             ) {
-                Text("Enviar para revisión")
+                Text(if (step == totalSteps - 1) "Enviar para revisión" else "Siguiente")
             }
             Spacer(Modifier.height(12.dp))
         }
@@ -644,9 +725,35 @@ private fun CommissionNotice() {
 }
 
 @Composable
-private fun FormLabel(text: String) {
-    Text(text = text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-    Spacer(Modifier.height(10.dp))
+private fun JourneyProgress(step: Int, totalSteps: Int) {
+    Text(
+        text = "Pregunta ${step + 1} de $totalSteps",
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = FontWeight.Bold,
+        color = PipiPurple,
+    )
+    Spacer(Modifier.height(8.dp))
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+        repeat(totalSteps) { index ->
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(5.dp)
+                    .background(
+                        color = if (index <= step) PipiPurple else PipiLilac,
+                        shape = RoundedCornerShape(99.dp),
+                    ),
+            )
+        }
+    }
+}
+
+@Composable
+private fun QuestionHeading(title: String, body: String) {
+    Text(text = title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+    Spacer(Modifier.height(8.dp))
+    Text(text = body, style = MaterialTheme.typography.bodyLarge, color = PipiInk.copy(alpha = 0.7f))
+    Spacer(Modifier.height(24.dp))
 }
 
 @Composable
