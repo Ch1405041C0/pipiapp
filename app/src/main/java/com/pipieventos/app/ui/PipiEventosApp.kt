@@ -2,6 +2,7 @@ package com.pipieventos.app.ui
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextButtonDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -43,20 +45,26 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.NumberFormat
 import java.util.Locale
+import com.pipieventos.app.R
 
 private val PipiPurple = Color(0xFF6425A6)
 private val PipiLilac = Color(0xFFF1E5FF)
 private val PipiInk = Color(0xFF22152D)
 private val PipiBackground = Color(0xFFFCF9FF)
 private val PipiGreen = Color(0xFF1D7A57)
+private val PipiNight = Color(0xFF0A0812)
+private val PipiGold = Color(0xFFFFBF61)
 
 private enum class AppScreen {
     WELCOME,
@@ -142,98 +150,110 @@ private fun WelcomeScreen(
     onCustomer: () -> Unit,
     onArtist: () -> Unit,
 ) {
-    Scaffold(containerColor = PipiBackground) { padding ->
-        Column(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(PipiNight),
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.pipi_fireworks_welcome),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 24.dp, vertical = 28.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Column {
-                Text(
-                    text = "pipi",
-                    color = PipiPurple,
-                    fontSize = 34.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                )
-                Text(
-                    text = "eventos",
-                    color = PipiInk,
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.SemiBold,
-                )
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0x24000000),
+                            Color(0x660A0812),
+                            Color(0xD90A0812),
+                            PipiNight,
+                        ),
+                    ),
+                ),
+        )
 
-                Spacer(Modifier.height(46.dp))
-                Text(
-                    text = "¿Qué querés hacer hoy?",
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = PipiInk,
-                )
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    text = "Elegí un camino y te guiamos paso a paso. Sin formularios eternos.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = PipiInk.copy(alpha = 0.72f),
-                )
-            }
-
-            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                RoleCard(
-                    emoji = "🎉",
-                    title = "Quiero armar un evento",
-                    body = "Respondé unas preguntas cortas y encontrá artistas y lugares para tu plan.",
-                    button = "Empezar mi plan",
-                    onClick = onCustomer,
-                )
-                RoleCard(
-                    emoji = "🎤",
-                    title = "Quiero ofrecer mi show",
-                    body = "Presentá tu show en tres pasos para que el equipo lo revise y lo publique.",
-                    button = "Publicar mi show",
-                    onClick = onArtist,
-                )
-            }
-
-            Text(
-                text = "La coordinación y los pagos se confirman con el equipo de Pipi Eventos.",
-                style = MaterialTheme.typography.bodySmall,
-                color = PipiInk.copy(alpha = 0.55f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-    }
-}
-
-@Composable
-private fun RoleCard(
-    emoji: String,
-    title: String,
-    body: String,
-    button: String,
-    onClick: () -> Unit,
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        shape = RoundedCornerShape(24.dp),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text(text = emoji, fontSize = 28.sp)
-            Spacer(Modifier.height(10.dp))
-            Text(text = title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(6.dp))
-            Text(text = body, style = MaterialTheme.typography.bodyMedium, color = PipiInk.copy(alpha = 0.7f))
-            Spacer(Modifier.height(18.dp))
-            Button(
-                onClick = onClick,
-                colors = ButtonDefaults.buttonColors(containerColor = PipiPurple),
-                modifier = Modifier.fillMaxWidth(),
+        Scaffold(containerColor = Color.Transparent) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 24.dp, vertical = 24.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(button)
+                Column {
+                    Text(
+                        text = "PIPI",
+                        color = Color.White,
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 2.sp,
+                    )
+                    Text(
+                        text = "EVENTOS",
+                        color = PipiGold,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 4.sp,
+                    )
+                }
+
+                Column {
+                    Text(
+                        text = "Una noche\nhecha para vos",
+                        color = Color.White,
+                        fontSize = 40.sp,
+                        lineHeight = 45.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                    )
+                    Spacer(Modifier.height(14.dp))
+                    Text(
+                        text = "Tu próxima gran historia empieza acá.",
+                        color = Color.White.copy(alpha = 0.78f),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Button(
+                        onClick = onCustomer,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PipiGold,
+                            contentColor = PipiNight,
+                        ),
+                        shape = RoundedCornerShape(18.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(58.dp),
+                    ) {
+                        Text(
+                            text = "Quiero armar mi evento",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                        )
+                    }
+                    TextButton(
+                        onClick = onArtist,
+                        colors = TextButtonDefaults.textButtonColors(contentColor = Color.White),
+                    ) {
+                        Text(
+                            text = "Quiero ofrecer mi show",
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                    Text(
+                        text = "Pipi Eventos conecta ideas, artistas y noches memorables.",
+                        color = Color.White.copy(alpha = 0.56f),
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
     }
